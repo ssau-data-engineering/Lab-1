@@ -83,3 +83,18 @@ CSV файлы с данными можно найти в папке `data` да
     [Как выполнить команду внутри Docker контейнера?](https://www.mousedc.ru/learning/565-komanda-docker-konteyner/)
 
     Также вы можете подключиться к терминалу докер контейнера средствами vscode.
+
+
+Отчет
+
+1. Для в качестве вспомогательного материала для развертывания контейнеров использовал -
+https://docs.docker.com/storage/volumes/
+
+2. Для написания dag использовал следующий tutorial -
+https://habr.com/ru/companies/otus/articles/679402/
+
+А также тестировал используемый код на платформе colab
+
+3. Для написания nifi pipeline использовал следующие материалы - 
+https://community.cloudera.com/t5/Community-Articles/Running-SQL-on-FlowFiles-using-QueryRecord-Processor-Apache/ta-p/246671
+
