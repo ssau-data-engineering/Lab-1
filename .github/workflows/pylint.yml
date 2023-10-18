@@ -5,6 +5,8 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     strategy:
       matrix:
         python-version: ["3.10"]
@@ -26,8 +28,6 @@ jobs:
           echo EOF
         } >> "$GITHUB_ENV"
     - name: Post result to PR
-      permissions:
-        pull-requests: write
       uses: mshick/add-pr-comment@v1
       with:
         message: ${{ env.MESSAGE }}
