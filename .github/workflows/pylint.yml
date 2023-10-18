@@ -26,6 +26,8 @@ jobs:
           echo EOF
         } >> "$GITHUB_ENV"
     - name: Post result to PR
+      permissions:
+        pull-requests: write
       uses: mshick/add-pr-comment@v1
       with:
         message: ${{ env.MESSAGE }}
