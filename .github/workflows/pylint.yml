@@ -20,8 +20,11 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        OUTPUT=$(pylint --exit-zero $(git ls-files '*.py'))
-        echo "MESSAGE=$OUTPUT" >> $GITHUB_ENV
+        {
+          echo 'MESSAGE<<EOF'
+          pylint --exit-zero $(git ls-files '*.py')
+          echo EOF
+        } >> "$GITHUB_ENV"
     - name: Post result to PR
       uses: mshick/add-pr-comment@v1
       with:
