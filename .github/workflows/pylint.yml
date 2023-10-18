@@ -20,4 +20,12 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        OUTPUT=$(pylint --exit-zero $(git ls-files '*.py'))
+        echo "MESSAGE=$OUTPUT" >> $GITHUB_ENV
+    - name: Post result to PR
+      uses: mshick/add-pr-comment@v1
+      with:
+        message: ${{ env.MESSAGE }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
+        allow-repeats: false # This is the default
