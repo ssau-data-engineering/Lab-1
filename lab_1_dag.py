@@ -4,6 +4,8 @@ import pendulum
 
 from airflow import DAG
 from airflow.decorators import task, dag
+from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 
 @dag(
     schedule=None,
@@ -24,10 +26,25 @@ def Lab_1_dag():
             df = pd.concat([df,df_])
 
         df = df.dropna(subset=['region_1','designation'])
-        df = df.fillna(value={'price': 0.0})    
+        df = df.fillna(value={'price': 0.0})  
+
+        es = Elasticsearch("http://elasticsearch-kibana:9200")
+        def doc_generator(df):
+            df_iter = df.iterrows()
+            for index, document in df_iter:
+                yield {
+                        "_index": 'lab1',
+                        "_type": "_doc",
+                        "_id" : f"{document['id']}",
+                        "_source": document,
+                    }
+            raise StopIteration
+        helpers.bulk(es, doc_generator(df))
 
         df.to_csv('/opt/airflow/data/lab_1/output/output.csv', encoding='utf-8', index=False)
 
     virtualenv_task = callable_virtualenv()
+
+    
 
 this_is_my_dag = Lab_1_dag()
