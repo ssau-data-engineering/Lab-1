@@ -22,35 +22,49 @@
 
 Описал граф для Airflow
 
-[фото графа]
+<p align="center">
+  <img width="600" height="300" src="https://github.com/Anteii/ssau-data-engineering-lab-1/blob/main/screenshots/resulting_graph.png"/>
+</p>
 
 Поместил файл с описанием графа в контейнер с Airflow (через маунт директорию)
 
 В интерфейсе Airflow выполнил граф (25 раз). Столкнулся на этом этапе с различными проблемами из-за проблем с пониманием документации. Несколько раз переписывал код с нуля (после постепенного ознакомления с Airflow понимал как можно лучше написать), что также ломало пайплайн.
 
-[фото интерфейса с запусками]
+<p align="center">
+  <img width="600" height="300" src="https://github.com/Anteii/ssau-data-engineering-lab-1/blob/main/screenshots/total_runs.png"/>
+</p>
 
 Задачу <i><b>save_to_elastic</b></i> писал после освоения документации по EK и построения нескольких тестовых дэшбордов.
 
 В Kibana создавал index pattern, загружал данные, после чего рисовал дэшборд.
 
-[фото дэшборда]
+<p align="center">
+  <img width="600" height="300" src="https://github.com/Anteii/ssau-data-engineering-lab-1/blob/main/screenshots/airflow-kibana-panel.png"/>
+</p>
 
 На графике изображена зависимость средней оценки вина от цены.
 
 Позже решил для больше наглядности сделал график зависимости средней цены от поставленной оценки.
 
-[фото 2 дэшборда]
+<p align="center">
+  <img width="600" height="300" src="https://github.com/Anteii/ssau-data-engineering-lab-1/blob/main/screenshots/airflow-kibana-panel2.png"/>
+</p>
 
 ### Этап 3. Apache Nifi
 
 В веб-интерфейсе нарисовал граф
 
-[рисунок графа]
+<p align="center">
+  <img width="600" height="300" src="https://github.com/Anteii/ssau-data-engineering-lab-1/blob/main/screenshots/nifi-graph.png"/>
+</p>
 
 При тестировании столкнулся с тем, что GetFile постоянно считывала файлы из исходной директории, из-за чего забивалась очередь и все зависало (из-за установки в GetGile флага keepSourceFiles)
 
 Полученный график в kibana полностью соответсвует графику полученному после выполнения airflow пайплайна
+
+<p align="center">
+  <img width="600" height="300" src="https://github.com/Anteii/ssau-data-engineering-lab-1/blob/main/screenshots/nifi-kibana-panel.png"/>
+</p>
 
 ### Этап 4. Вывод
 
