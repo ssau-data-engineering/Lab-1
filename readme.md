@@ -1,7 +1,6 @@
 # Лабораторная работа №1
 
-Отчет по данной работе опубликован на <https://github.com/bnepryakhin63/Data-engineering_Lab-1/blob/main/Отчет%20по%20работе%20Непряхин.md>
-
+Отчет по данной работе опубликован: <https://github.com/bnepryakhin63/Data-engineering_Lab-1/blob/main/Отчет%20по%20работе%20Непряхин.md>
 
 ## Базовый пайплайн работы с данными
 
