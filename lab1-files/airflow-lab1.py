@@ -1,49 +1,56 @@
-from airflow.decorators import dag, task
-from datetime import datetime
-import pandas as pd
-import os
-import glob
+from airflow import DAG
+from airflow.operators.python import PythonOperator
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
+from datetime import datetime, timedelta
+import pandas as pd
+import numpy as np
+import uuid
 
-@dag(
-    start_date=datetime(2021, 1, 1),
-    schedule_interval=None,
+default_args = {
+    'owner': 'mariashaina',
+    'start_date': datetime(2023, 12, 5),
+}
+
+dag = DAG(
+    'airflow_lab1',
+    default_args=default_args,
     catchup=False,
-    doc_md=__doc__,
 )
-def data_clean_pipeline():
-    load_data_folder = './../data'
-    filename_path_save = './lab1_output.csv'
 
-    @task
-    def load_data(path_folder: str):
-        files = glob.glob(os.path.join(path_folder, '*.csv'))
-        return pd.concat((pd.read_csv(file) for file in files), ignore_index=True)
+def extract_transform_load_data():
+    chunks = [pd.read_csv(f"/opt/airflow/data/chunk{i}.csv") for i in range(26)]
+    result_dataframe = pd.concat(chunks)
 
-    @task
-    def preprocessing(df: pd.DataFrame):
-        df = df.dropna(subset=['designation', 'region_1'])
-        df['price'].fillna(0.0, inplace=True)
-        return df
+    result_dataframe = result_dataframe.dropna(subset=['designation', 'region_1'])
+    result_dataframe['price'] = result_dataframe['price'].fillna(0)
+    result_dataframe = result_dataframe.drop(['id'], axis=1)
 
-    @task
-    def save_data(df: pd.DataFrame, filename_path_save: str):
-        df.to_csv(filename_path_save, index=False)
+    result_dataframe.to_csv('/opt/airflow/data/data.csv', index=False)
 
-    @task
-    def index_to_elasticsearch(df: pd.DataFrame):
-        es = Elasticsearch(['localhost'], port=19200)
-        data_json = df.to_dict(orient='records')
-        actions = [
-            {'_index': 'my_index', '_type': 'my_type', '_id': i, '_source': doc}
-            for i, doc in enumerate(data_json)
-        ]
-        bulk(es, actions)
+etl_task = PythonOperator(
+    task_id='etl_task',
+    python_callable=extract_transform_load_data,
+    dag=dag
+)
 
-    df = load_data(load_data_folder)
-    df_preprocessed = preprocessing(df)
-    save_data(df_preprocessed, filename_path_save)
-    index_to_elasticsearch(df_preprocessed)
+def load_chunck_data_to_elastic():
+    elastic_connection = Elasticsearch("http://elasticsearch-kibana:9200")
 
-pipeline_dag = data_clean_pipeline()
+    data_from_file = pd.read_csv('/opt/airflow/data/data.csv')
+    
+    mod_data_from_file = data_from_file.fillna('')
+    for i, current_row in mod_data_from_file.iterrows():
+        id_documenta = str(uuid.uuid4())
+
+        row_documenta = {key: current_row[key] for key in ["country", "description", "designation", "points", "price", "province", "region_1", "taster_name", "taster_twitter_handle", "title", "variety", "winery"]}
+
+        elastic_connection.index(index="dag_wines", id=id_documenta, body=row_documenta)
+        print(row_documenta)
+
+load_task = PythonOperator(
+    task_id='load_task',
+    python_callable=load_chunck_data_to_elastic,
+    dag=dag
+)
+
+etl_task >> load_task
