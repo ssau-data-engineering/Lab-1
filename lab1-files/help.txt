@@ -1,0 +1,5 @@
+Apache Airflow
+1. https://habr.com/ru/amp/publications/682384/
+
+Apache Nifi
+1. https://youtu.be/58kX703OSdo?si=vskTkTUdXazp-D8X
